@@ -26,6 +26,12 @@ public class CouponService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다. couponId: " + couponId));
     }
 
+    @Transactional(readOnly = true)
+    public Coupon getCouponWithExclusiveLock(Long couponId) {
+        return couponRepository.getCouponWithExclusiveLock(couponId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 쿠폰입니다. couponId: " + couponId));
+    }
+
     public List<Coupon> findIssuableCoupons() {
         LocalDateTime now = LocalDateTime.now();
         return couponRepository.findAllByIssuableAndCouponStatusAndIssueStartedAtLessThanAndIssueEndedAtGreaterThan(
