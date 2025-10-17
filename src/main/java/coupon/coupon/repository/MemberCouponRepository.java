@@ -1,9 +1,12 @@
 package coupon.coupon.repository;
 
 import coupon.coupon.domain.MemberCoupon;
+import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +22,9 @@ public interface MemberCouponRepository extends JpaRepository<MemberCoupon, Long
 
     Long countByCoupon_IdAndUsed(Long couponId, boolean used);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT mc FROM MemberCoupon mc JOIN FETCH mc.coupon c WHERE mc.id = :memberCouponId")
+    Optional<MemberCoupon> findByIdWithExclusiveLock(Long memberCouponId);
 
     @Modifying
     @Query("update MemberCoupon mc set mc.used = :used, mc.usedAt = :usedAt where mc.id in :memberCouponIds")
